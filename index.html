@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Scaevola Studios | Home</title>
+	<link href="bootstrap.min.css" rel="stylesheet">
+	<script src="marked.min.js"></script>
+</head>
+
+<body class="bg-light">
+	<div class="container my-5">
+		<h1 class="mb-4">Scaevola Studios</h1>
+		<div id="content">Loading...</div>
+	</div>
+
+	<script>
+		const content = document.getElementById('content');
+
+		// Sorts posts by date desc
+		const postSorter = (a, b) => {
+			const ad = new Date(a.date);
+			const bd = new Date(b.date);
+
+			return ad > bd ? -1 : ad < bd ? 1 : 0;
+		};
+
+		function formatDateLocale(date) {
+			const locale = navigator.language || 'en-US';
+
+			// Format date part (consistent across locales)
+			const dateFormatter = new Intl.DateTimeFormat(locale, {
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit'
+			});
+			const dateParts = dateFormatter.formatToParts(date);
+			const year = dateParts.find(p => p.type === 'year').value;
+			const month = dateParts.find(p => p.type === 'month').value;
+			const day = dateParts.find(p => p.type === 'day').value;
+			const dateStr = `${year}-${month}-${day}`;
+
+			// Format time part (locale-aware: 24h or 12h+AM/PM)
+			const timeFormatter = new Intl.DateTimeFormat(locale, {
+				hour: 'numeric',
+				minute: '2-digit',
+				hour12: undefined  // Uses locale default
+			});
+			const timeStr = timeFormatter.format(date);
+
+			return `${dateStr} ${timeStr}`;
+		}
+
+		fetch('/posts.json')
+			.then(r => r.json())
+			.then(postData => {
+				const posts = [];
+				const fetchPromises = [];
+
+				for (let i = 0; i < postData.length; i++) {
+					const post = postData[i];
+					fetchPromises.push(
+						fetch('posts/' + post.fileName)
+							.then(res => res.text())
+							.then(text => {
+								posts.push({ title: post.title, author: post.author, date: post.date, text: text });
+							}));
+				}
+
+				Promise.all(fetchPromises)
+					.then(() => {
+						// Remove 'Loading...'
+						content.innerHTML = '';
+
+						posts.sort(postSorter);
+
+						for (let i = 0; i < posts.length; i++) {
+							const post = posts[i];
+
+							// Initialize post text with title and date
+							const postText = `#### ${post.title}\n\n<span style="color:gray"><small>${formatDateLocale(new Date(post.date))}${post.author ? ` • ${post.author}` : ''}</small></span>\n\n---\n${post.text}`;
+
+							const newDiv = document.createElement('div');
+							newDiv.style.marginBottom = '40px';
+							newDiv.innerHTML = marked.parse(postText);
+
+							content.appendChild(newDiv);
+						}
+					})
+			});
+	</script>
+
+</body>
+
+</html>
