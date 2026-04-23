@@ -2,3 +2,7 @@
   mask-image: linear-gradient(to bottom, black 70%, transparent);
   -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent);
 }
+
+.bg-sienna {
+  background-color: #882D17;
+}

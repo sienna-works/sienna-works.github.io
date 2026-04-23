@@ -121,7 +121,7 @@ function fetchPosts() {
         .then(
             /** @param {Post[]} postData */
             postData => {
-                document.title = "Home | Scaevola Studios";
+                document.title = "Home | Sienna Works";
 
                 const content = document.getElementById('content');
 
