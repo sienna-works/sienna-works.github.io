@@ -69,7 +69,7 @@ function navPost(post) {
 	fetch(`posts/${post.fileName}`)
 		.then(response => response.text())
 		.then(data => {
-			const postText = `#### ${post.title}\n\n<span style="color:gray"><small>${formatDateLocale(new Date(post.date))}${post.author ? ` • ${post.author}` : ''}</small></span>\n\n---\n${data}`;
+			const postText = `#### ${post.title}\n\n<span style="color:gray"><small>${formatDateLocale(new Date(new Date(post.date + ":00Z").toLocaleString()))}${post.author ? ` • ${post.author}` : ''}</small></span>\n\n---\n${data}`;
 			const content = document.getElementById('content');
 
 			content.innerHTML = marked.parse(postText);

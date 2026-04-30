@@ -168,15 +168,15 @@ function fetchPosts() {
                         for (let i = 0; i < posts.length; i++) {
                             const post = posts[i];
                             const lineCount = i === 0 && currentPage <= 1
-                                ? 5
+                                ? 8
                                 : 3;
                             const maxHeight = i === 0 && currentPage <= 1
-                                ? '500px'
+                                ? '800px'
                                 : '250px';
 
                             // Initialize post text with title and date
                             const previewLines = post.text.substring(0, getPosition(post.text, '\n', lineCount));
-                            const postText = `#### ${post.title}\n\n<span style="color:gray"><small>${formatDateLocale(new Date(post.date))}${post.author ? ` • ${post.author}` : ''}</small></span>\n\n---\n${previewLines}`;
+                            const postText = `#### ${post.title}\n\n<span style="color:gray"><small>${formatDateLocale(new Date(new Date(post.date + ":00Z").toLocaleString()))}${post.author ? ` • ${post.author}` : ''}</small></span>\n\n---\n${previewLines}`;
 
                             const postBlock = document.createElement('div');
                             postBlock.style.marginBottom = '40px';
